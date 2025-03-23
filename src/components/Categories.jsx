@@ -1,103 +1,76 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const { categoryName } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch categories from DummyJSON
+  // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const res = await fetch("https://dummyjson.com/products/categories");
         if (!res.ok) throw new Error("Failed to fetch categories");
         const data = await res.json();
+        console.log("Fetched Categories:", data); // Debugging
 
-        // Check the data structure to confirm it's an array of strings or objects
-        console.log("Categories fetched:", data); // Debugging to verify data structure
-        setCategories(data); // Assuming the API returns an array of strings like ["electronics", "jewelery"]
+        // Ensure categories is an array of objects
+        if (Array.isArray(data)) {
+          setCategories(data);
+        } else {
+          console.error("Unexpected categories data structure:", data);
+          setError("Unexpected categories data structure.");
+        }
       } catch (err) {
         console.error("Error fetching categories:", err);
+        setError("Unable to fetch categories.");
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchCategories();
   }, []);
 
-  // Fetch products for the selected category
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (!categoryName) return;
-
-      try {
-        const res = await fetch(`https://dummyjson.com/products/category/${categoryName}`);
-        if (!res.ok) throw new Error("Failed to fetch products");
-        const data = await res.json();
-
-        // Log products for debugging purposes
-        console.log("Products fetched:", data.products);
-        setProducts(data.products || []);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      }
-    };
-
-    fetchProducts();
-  }, [categoryName]);
-
+  // Handle category selection
   const handleCategoryChange = (e) => {
     const selectedCategory = e.target.value;
-    navigate(`/category/${selectedCategory}`); // Navigate to the selected category page
+    navigate(`/category/${selectedCategory}`); // Navigate to the selected category
   };
+
+  // Loading state
+  if (loading) {
+    return <div className="text-center py-5 text-gray-700 font-semibold">Loading categories...</div>;
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="text-center text-red-600">
+        <p>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
-      {/* Categories Dropdown */}
       <h1 className="text-2xl font-bold mb-4">Categories</h1>
+      {/* Dropdown Menu */}
       <select
         className="w-full p-3 border rounded-md bg-gray-100 hover:bg-gray-200 transition"
-        value={categoryName || ""}
         onChange={handleCategoryChange}
+        defaultValue=""
       >
         <option value="" disabled>
           Select a category...
         </option>
         {categories.map((category, index) => (
-          <option key={index} value={category}>
-            {typeof category === "string" ? category : category.name}
+          <option key={index} value={category.slug}> {/* Use category.slug as the value */}
+            {category.name} {/* Use category.name as the display text */}
           </option>
         ))}
       </select>
-
-      {/* Display Products in Selected Category */}
-      {categoryName && (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold capitalize mb-4">
-            Products in {categoryName}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.length > 0 ? (
-              products.map((product) => (
-                <div key={product.id} className="p-4 bg-white rounded-lg shadow-md">
-                  <Link to={`/product/${product.id}`}>
-                    <img
-                      src={product.thumbnail || "https://dummyimage.com/150x150/cccccc/000000&text=No+Image"}
-                      alt={product.title || "Product image"}
-                      className="w-full h-40 object-cover rounded-md"
-                    />
-                    <h3 className="text-lg font-bold mt-2">{product.title || "Untitled Product"}</h3>
-                    <p className="text-green-600 font-semibold">${product.price || 0}</p>
-                  </Link>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-gray-600">No products found in this category.</p>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

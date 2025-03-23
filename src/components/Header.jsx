@@ -1,52 +1,33 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaShoppingCart } from "react-icons/fa";
-import { motion } from "framer-motion";
+import React from "react";
+import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { FaShoppingCart } from "react-icons/fa"; // Import cart icon
 
 const Header = () => {
-  const navigate = useNavigate();
+  const { cart } = useCart();
 
-  // Ad messages with their corresponding navigation paths and styles
-  const ads = [
-    { text: "Welcome to Amos ShopEase", path: "/contact", style: "text-[3rem] text-yellow-600 font-extrabold" },
-    { text: "Brand Day - Shop Now!", path: "#all-products", style: "text-[3rem] text-red-500 font-extrabold" },
-    { text: "Up to 50% OFF Live Now!", path: "#discounts", style: "text-[3rem] text-green-400 font-extrabold" },
-    { text: "Sell on ShopEase", path: "/sell", style: "text-[3rem] text-purple-400 font-bold" }
-  ];
-
-  const [currentAdIndex, setCurrentAdIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentAdIndex((prev) => (prev + 1) % ads.length);
-    }, 4000); // Change ad every 4 seconds
-
-    return () => clearInterval(interval); // Cleanup interval on unmount
-  }, [ads.length]);
+  // Calculate total items in the cart
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <header className="bg-blue-600 text-white shadow-md h-40 flex flex-col relative w-full">
-      {/* Ad Banner with Horizontal Scrolling Animation */}
-      <div
-        className="absolute top-8 w-full overflow-hidden bg-blue-700 cursor-pointer h-16 flex items-center"
-        onClick={() => navigate(ads[currentAdIndex].path)}
-      >
-        <motion.div
-          key={currentAdIndex}
-          initial={{ x: "100%" }} // Start from the right
-          animate={{ x: "-100%" }} // Move to the left
-          transition={{ duration: 8, ease: "linear", repeat: Infinity }} // Smooth infinite scroll
-          className={`whitespace-nowrap ${ads[currentAdIndex].style}`} // Prevent text wrapping
-        >
-          {ads[currentAdIndex].text}
-        </motion.div>
-      </div>
-
-      {/* Logo and Navigation at the Bottom Left */}
-      <div className="absolute bottom-4 left-0 flex items-center p-4">
-        <Link to="/" className="text-2xl font-bold flex items-center gap-2">
-          <FaShoppingCart /> Amos ShopEase
+    <header className="bg-blue-600 text-white p-4 shadow-md fixed top-0 left-0 w-full z-50">
+      <div className="container mx-auto flex justify-between items-center">
+        <Link to="/" className="text-2xl font-bold">
+          MyStore
         </Link>
+        <nav className="flex items-center space-x-4">
+          <Link to="/" className="hover:text-blue-200">
+            Home
+          </Link>
+          <Link to="/cart" className="hover:text-blue-200 relative">
+            <FaShoppingCart className="text-2xl" /> {/* Cart Icon */}
+            {totalItems > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 transform translate-x-1/2 -translate-y-1/2">
+                {totalItems}
+              </span>
+            )}
+          </Link>
+        </nav>
       </div>
     </header>
   );
