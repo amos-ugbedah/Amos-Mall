@@ -1,13 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { FaShoppingCart } from "react-icons/fa"; // Import cart icon
+import { useWishlist } from "../context/WishlistContext";
+import { FaShoppingCart, FaHeart } from "react-icons/fa"; // Import icons
 
 const Header = () => {
   const { cart } = useCart();
+  const { wishlist } = useWishlist();
 
-  // Calculate total items in the cart
-  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+  // Calculate total items in the cart and wishlist
+  const totalCartItems = cart.reduce((total, item) => total + item.quantity, 0);
+  const totalWishlistItems = wishlist.length;
 
   return (
     <header className="bg-blue-600 text-white p-4 shadow-md fixed top-0 left-0 w-full z-50">
@@ -19,11 +22,19 @@ const Header = () => {
           <Link to="/" className="hover:text-blue-200">
             Home
           </Link>
+          <Link to="/wishlist" className="hover:text-blue-200 relative">
+            <FaHeart className="text-2xl" /> {/* Wishlist Icon */}
+            {totalWishlistItems > 0 && (
+              <span className="absolute top-0 right-0 bg-pink-500 text-white text-xs rounded-full px-1.5 py-0.5 transform translate-x-1/2 -translate-y-1/2">
+                {totalWishlistItems}
+              </span>
+            )}
+          </Link>
           <Link to="/cart" className="hover:text-blue-200 relative">
             <FaShoppingCart className="text-2xl" /> {/* Cart Icon */}
-            {totalItems > 0 && (
+            {totalCartItems > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 transform translate-x-1/2 -translate-y-1/2">
-                {totalItems}
+                {totalCartItems}
               </span>
             )}
           </Link>

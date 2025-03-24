@@ -1,34 +1,40 @@
-import React, { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const WishlistContext = createContext();
 
-const wishlistReducer = (state, action) => {
-  switch (action.type) {
-    case "ADD_TO_WISHLIST":
-      // Check if the product already exists in the wishlist
-      const existingProduct = state.find(
-        (item) => item.id === action.payload.id
-      );
-      if (existingProduct) {
-        return state; // Do not add duplicate products
-      }
-      return [...state, action.payload];
-    case "REMOVE_FROM_WISHLIST":
-      return state.filter((item) => item.id !== action.payload);
-    default:
-      return state;
-  }
-};
-
 export const WishlistProvider = ({ children }) => {
-  const [wishlist, dispatch] = useReducer(wishlistReducer, []);
+  const [wishlist, setWishlist] = useState(() => {
+    // ✅ Load wishlist from localStorage only once at the start
+    const savedWishlist = localStorage.getItem("wishlist");
+    return savedWishlist ? JSON.parse(savedWishlist) : [];
+  });
+
+  // ✅ Save wishlist to localStorage when it updates
+  useEffect(() => {
+    if (wishlist.length > 0) {
+      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    }
+  }, [wishlist]);
 
   const addToWishlist = (product) => {
-    dispatch({ type: "ADD_TO_WISHLIST", payload: product });
+    setWishlist((prevWishlist) => {
+      if (prevWishlist.some((item) => item.id === product.id)) {
+        return prevWishlist; // Prevent duplicate items
+      }
+      const updatedWishlist = [...prevWishlist, product];
+      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // ✅ Save immediately
+      return updatedWishlist;
+    });
   };
 
-  const removeFromWishlist = (id) => {
-    dispatch({ type: "REMOVE_FROM_WISHLIST", payload: id });
+  const removeFromWishlist = (productId) => {
+    setWishlist((prevWishlist) => {
+      const updatedWishlist = prevWishlist.filter(
+        (item) => item.id !== productId
+      );
+      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // ✅ Save immediately
+      return updatedWishlist;
+    });
   };
 
   return (
