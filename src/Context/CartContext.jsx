@@ -1,10 +1,13 @@
 /* eslint-disable no-case-declarations */
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 
-const CartContext = createContext(); // ✅ Ensure Context is properly created
+const CartContext = createContext();
 
 const cartReducer = (state, action) => {
   switch (action.type) {
+    case "LOAD_CART":
+      return { ...state, cartItems: action.payload };
+
     case "ADD_TO_CART":
       const existingProduct = state.cartItems.find(
         (item) => item.id === action.payload.id
@@ -48,16 +51,17 @@ const cartReducer = (state, action) => {
 
 // ✅ Context Provider
 export const CartProvider = ({ children }) => {
-  // Ensure `localStorage.getItem("cart")` is properly parsed and defaults to `[]`
-  const initialCart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-  const [state, dispatch] = useReducer(cartReducer, {
-    cartItems: initialCart,
-  });
+  const [state, dispatch] = useReducer(cartReducer, { cartItems: [] });
 
   useEffect(() => {
-    // Ensure localStorage updates whenever cart state changes
-    localStorage.setItem("cart", JSON.stringify(state.cartItems));
+    const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    dispatch({ type: "LOAD_CART", payload: storedCart });
+  }, []);
+
+  useEffect(() => {
+    if (state.cartItems.length > 0) {
+      localStorage.setItem("cart", JSON.stringify(state.cartItems));
+    }
   }, [state.cartItems]);
 
   const addToCart = (product) => {

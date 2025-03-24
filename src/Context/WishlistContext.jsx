@@ -4,43 +4,37 @@ const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState(() => {
-    // ✅ Load wishlist from localStorage only once at the start
-    const savedWishlist = localStorage.getItem("wishlist");
-    return savedWishlist ? JSON.parse(savedWishlist) : [];
+    try {
+      return JSON.parse(localStorage.getItem("wishlist")) || [];
+    } catch {
+      return [];
+    }
   });
 
-  // ✅ Save wishlist to localStorage when it updates
   useEffect(() => {
     if (wishlist.length > 0) {
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    } else {
+      localStorage.removeItem("wishlist"); // Remove key if wishlist is empty
     }
   }, [wishlist]);
 
   const addToWishlist = (product) => {
-    setWishlist((prevWishlist) => {
-      if (prevWishlist.some((item) => item.id === product.id)) {
-        return prevWishlist; // Prevent duplicate items
-      }
-      const updatedWishlist = [...prevWishlist, product];
-      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // ✅ Save immediately
-      return updatedWishlist;
-    });
+    setWishlist((prevWishlist) =>
+      prevWishlist.some((item) => item.id === product.id)
+        ? prevWishlist
+        : [...prevWishlist, product]
+    );
   };
 
   const removeFromWishlist = (productId) => {
-    setWishlist((prevWishlist) => {
-      const updatedWishlist = prevWishlist.filter(
-        (item) => item.id !== productId
-      );
-      localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // ✅ Save immediately
-      return updatedWishlist;
-    });
+    setWishlist((prevWishlist) =>
+      prevWishlist.filter((item) => item.id !== productId)
+    );
   };
 
   return (
-    <WishlistContext.Provider
-      value={{ wishlist, addToWishlist, removeFromWishlist }}
-    >
+    <WishlistContext.Provider value={{ wishlist, addToWishlist, removeFromWishlist }}>
       {children}
     </WishlistContext.Provider>
   );

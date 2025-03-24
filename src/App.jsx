@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { CartProvider } from "./context/CartContext";  // Capital "C"
-import { WishlistProvider } from "./context/WishlistContext";  // Capital "C"
-import { CurrencyProvider } from "./context/CurrencyContext";  // Capital "C"
+import { CartProvider } from "./context/CartContext";  // Ensure "context" is lowercase
+import { WishlistProvider } from "./context/WishlistContext";
+import { CurrencyProvider } from "./context/CurrencyContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -25,8 +25,8 @@ function App() {
           <CurrencyProvider>
             <ErrorBoundary>
               <Header />
-              <SearchBar searchTerm="" setSearchTerm={() => {}} />
-              <ScrollToTop /> {/* Ensure page scrolls to top on navigation */}
+              <SearchBar /> {/* ✅ Remove unnecessary props */}
+              <ScrollToTop />
               <main className="flex-grow pt-32">
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -35,7 +35,7 @@ function App() {
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
-                  <Route path="/order-success" element={<OrderSuccess />} /> {/* New Order Success Page */}
+                  <Route path="/order-success" element={<OrderSuccess />} />
                 </Routes>
               </main>
               <Footer />
