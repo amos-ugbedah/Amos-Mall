@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useCart } from "../Context/CartContext";
+import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { FaShoppingCart, FaHeart, FaArrowLeft, FaArrowRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 

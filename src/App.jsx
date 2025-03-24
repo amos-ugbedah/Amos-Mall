@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { CartProvider } from "./Context/CartContext";  // Capital "C"
-import { WishlistProvider } from "./Context/WishlistContext";  // Capital "C"
-import { CurrencyProvider } from "./Context/CurrencyContext";  // Capital "C"
+import { CartProvider } from "./context/CartContext";  // Capital "C"
+import { WishlistProvider } from "./context/WishlistContext";  // Capital "C"
+import { CurrencyProvider } from "./context/CurrencyContext";  // Capital "C"
 import ErrorBoundary from "./components/ErrorBoundary";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
