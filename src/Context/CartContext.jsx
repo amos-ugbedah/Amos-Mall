@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 
 const CartContext = createContext(); // ✅ Ensure Context is properly created
