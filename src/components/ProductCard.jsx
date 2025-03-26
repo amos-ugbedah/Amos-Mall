@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaShoppingCart, FaHeart } from "react-icons/fa"; // Import icons
 import { useCart } from "../hook/useCart";
-import { useWishlist } from "../hook/useWishList";
+import { useWishlist } from "../hook/useWishlist";
 
 
 function ProductCard({ product }) {
