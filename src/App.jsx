@@ -1,13 +1,21 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
-import { CartProvider } from "./context/CartContext";  // Ensure "context" is lowercase
-import { WishlistProvider } from "./context/WishlistContext";
+import { useState, useEffect } from "react";
 import { CurrencyProvider } from "./context/CurrencyContext";
+import { CartProvider } from "./context/CartContext";  // Ensure CartProvider is used
+import { WishlistProvider } from "./context/WishlistContext";  // Ensure WishlistProvider is used
 import ErrorBoundary from "./components/ErrorBoundary";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
-import { Home, ProductDetail, CategoryProducts, CartPage, CheckoutPage, WishlistPage, OrderSuccess } from "./pages";
+import {
+  Home,
+  ProductDetail,
+  CategoryProducts,
+  CartPage,
+  CheckoutPage,
+  WishlistPage,
+  OrderSuccess,
+} from "./pages";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -18,20 +26,25 @@ function ScrollToTop() {
 }
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState(""); // ✅ Fix searchTerm state
+
   return (
     <BrowserRouter>
-      <CartProvider>
-        <WishlistProvider>
-          <CurrencyProvider>
-            <ErrorBoundary>
+      <ErrorBoundary>
+        <CurrencyProvider>
+          <CartProvider> {/* Ensure Cart Context is available */}
+            <WishlistProvider> {/* Ensure Wishlist Context is available */}
               <Header />
-              <SearchBar /> {/* ✅ Remove unnecessary props */}
+              <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} /> {/* ✅ Pass props properly */}
               <ScrollToTop />
               <main className="flex-grow pt-32">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/product/:productId" element={<ProductDetail />} />
-                  <Route path="/category/:categoryName" element={<CategoryProducts />} />
+                  <Route
+                    path="/category/:categoryName"
+                    element={<CategoryProducts />}
+                  />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
@@ -39,10 +52,10 @@ function App() {
                 </Routes>
               </main>
               <Footer />
-            </ErrorBoundary>
-          </CurrencyProvider>
-        </WishlistProvider>
-      </CartProvider>
+            </WishlistProvider>
+          </CartProvider>
+        </CurrencyProvider>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext";
 import { FaShoppingCart, FaHeart, FaArrowLeft, FaArrowRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useCart } from "../hook/useCart";
+import { useWishlist } from "../hook/useWishlist";
 
 const ProductDetail = () => {
   const { productId } = useParams();
@@ -11,15 +11,25 @@ const ProductDetail = () => {
   const { addToWishlist, wishlist } = useWishlist();
   const [product, setProduct] = useState(null);
   const [currentImage, setCurrentImage] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`https://dummyjson.com/products/${productId}`)
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`https://dummyjson.com/products/${productId}`);
+        if (!response.ok) throw new Error("Product not found");
+        
+        const data = await response.json();
         setProduct(data);
         setCurrentImage(0);
-      })
-      .catch((error) => console.error("Error fetching product:", error));
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
   }, [productId]);
 
   const handleAddToWishlist = () => {
@@ -51,7 +61,8 @@ const ProductDetail = () => {
     navigate(`/product/${nextId}`);
   };
 
-  if (!product) return <p>Loading...</p>;
+  if (loading) return <p className="text-center mt-10">Loading product details...</p>;
+  if (!product) return <p className="text-center mt-10 text-red-500">Product not found</p>;
 
   return (
     <div className="container mx-auto p-4">
@@ -61,13 +72,25 @@ const ProductDetail = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="relative">
-          <img src={product.images[currentImage]} alt={product.title} className="w-full h-64 object-cover rounded-md" />
+          {/* Show a placeholder while the main image loads */}
+          <img
+            src={product.images[currentImage]}
+            alt={product.title}
+            className="w-full h-64 object-cover rounded-md"
+            loading="lazy"
+          />
           {product.images.length > 1 && (
             <>
-              <button className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full" onClick={prevImage}>
+              <button
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
+                onClick={prevImage}
+              >
                 <FaChevronLeft />
               </button>
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full" onClick={nextImage}>
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full"
+                onClick={nextImage}
+              >
                 <FaChevronRight />
               </button>
             </>
@@ -85,10 +108,16 @@ const ProductDetail = () => {
           <p className="text-gray-700"><strong>Stock:</strong> {product.stock} available</p>
 
           <div className="flex space-x-4 mt-6">
-            <button onClick={() => addToCart(product)} className="flex items-center bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
+            <button
+              onClick={() => addToCart(product)}
+              className="flex items-center bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+            >
               <FaShoppingCart className="mr-2" /> Add to Cart
             </button>
-            <button onClick={handleAddToWishlist} className="flex items-center bg-pink-600 text-white px-6 py-2 rounded-md hover:bg-pink-700 transition">
+            <button
+              onClick={handleAddToWishlist}
+              className="flex items-center bg-pink-600 text-white px-6 py-2 rounded-md hover:bg-pink-700 transition"
+            >
               <FaHeart className={`${wishlist.some((item) => item.id === product.id) ? "text-red-500" : ""} mr-2`} />
               {wishlist.some((item) => item.id === product.id) ? "Added" : "Wishlist"}
             </button>
@@ -97,10 +126,16 @@ const ProductDetail = () => {
       </div>
 
       <div className="flex justify-between mt-6">
-        <button onClick={goToPreviousProduct} className="flex items-center bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition">
+        <button
+          onClick={goToPreviousProduct}
+          className="flex items-center bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition"
+        >
           <FaArrowLeft className="mr-2" /> Previous Product
         </button>
-        <button onClick={goToNextProduct} className="flex items-center bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition">
+        <button
+          onClick={goToNextProduct}
+          className="flex items-center bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition"
+        >
           Next Product <FaArrowRight className="ml-2" />
         </button>
       </div>

@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useWishlist } from "../context/WishlistContext";
 import { FaHeart } from "react-icons/fa"; // Import heart icon
+import { useWishlist } from "../hook/useWishlist";
+
+
 
 function WishlistProductCard({ product }) {
   const { addToWishlist, removeFromWishlist, wishlist } = useWishlist();

@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-import { useCart } from "../context/CartContext";
-import { useCurrency } from "../context/CurrencyContext";
 import { Link } from "react-router-dom";
+import { useCart } from "../hook/useCart";
+import { useCurrency } from "../hook/useCurrency";
+
 
 const CartPage = () => {
   const { cart, getTotalPrice, addToCart, removeFromCart, updateCartItemQuantity } = useCart();

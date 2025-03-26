@@ -25,7 +25,7 @@ export const CurrencyProvider = ({ children }) => {
 
   // Convert amount to selected currency
   const convertCurrency = (amount, targetCurrency) => {
-    const rate = exchangeRates[targetCurrency];
+    const rate = exchangeRates[targetCurrency] || 1;
     return (amount * rate).toFixed(2);
   };
 
@@ -38,4 +38,4 @@ export const CurrencyProvider = ({ children }) => {
   );
 };
 
-export const useCurrency = () => React.useContext(CurrencyContext);
+export default CurrencyContext;

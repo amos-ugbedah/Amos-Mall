@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useCart } from "../context/CartContext";
-import { useCurrency } from "../context/CurrencyContext";
 import { convertCurrency } from "../utils/currencyConverter";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../hook/useCart";
+import { useCurrency } from "../hook/useCurrency";
+
 
 const CheckoutPage = () => {
   const { cart, getTotalPrice, clearCart } = useCart(); // Added clearCart to empty cart after successful order

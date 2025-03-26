@@ -1,7 +1,9 @@
 import React from "react";
-import { useWishlist } from "../context/WishlistContext";
-import { useCart } from "../context/CartContext";
 import WishlistProductCard from "../components/WishlistProductCard";
+import { useWishlist } from "../hook/useWishlist";
+import { useCart } from "../hook/useCart";
+
+
 
 const WishlistPage = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
